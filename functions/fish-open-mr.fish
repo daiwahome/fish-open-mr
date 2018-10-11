@@ -21,11 +21,15 @@ function open-mr
   end
 
   if echo $result | grep -q message
-      echo 'Error:' (echo $result | jq -r '.message')
+      echo 'fatal:' (echo $result | jq -r '.message')
       return
   end
 
   set -l mr_url (echo $result | jq -r '.[] | .web_url')
+  if test -z "$mr_url"
+    echo 'fatal: not found the merge request'
+    return
+  end
 
   echo "open $mr_url"
   open $mr_url
